@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presidential Speech Word Tree</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- D3.js v7 -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <!-- Control Panel -->
+    <div id="controls">
+        <h2>Word Tree Explorer</h2>
+
+        <div class="control-group">
+            <label for="root-word-select">Root Word:</label>
+            <select id="root-word-select">
+                <option value="we">we</option>
+                <option value="must">must</option>
+                <option value="freedom">freedom</option>
+                <option value="fear">fear</option>
+                <option value="never">never</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Direction:</label>
+            <div class="toggle-switch">
+                <label class="radio-label">
+                    <input type="radio" id="direction-after" name="direction" value="after" checked>
+                    After (Suffix)
+                </label>
+                <label class="radio-label">
+                    <input type="radio" id="direction-before" name="direction" value="before">
+                    Before (Prefix)
+                </label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="color-mode-select">Color By:</label>
+            <select id="color-mode-select">
+                <option value="era">Historical Era</option>
+                <option value="speaker">Speaker (President)</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="search-input">Search:</label>
+            <input type="text" id="search-input" placeholder="Search for a word...">
+            <div class="button-row">
+                <button id="search-btn" class="btn-secondary">Find</button>
+                <button id="clear-search-btn" class="btn-secondary">Clear</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <button id="expand-all-btn" class="btn-primary">Expand All</button>
+            <button id="collapse-all-btn" class="btn-primary">Collapse All</button>
+        </div>
+
+        <div class="info-box">
+            <p><strong>Click nodes</strong> to expand/collapse branches</p>
+            <p><strong>Hover</strong> for details</p>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div id="legend">
+        <h3>Legend</h3>
+        <div id="legend-content"></div>
+    </div>
+
+    <!-- Visualization Container -->
+    <div id="visualization">
+        <svg id="tree-svg"></svg>
+    </div>
+
+    <!-- Tooltip -->
+    <div id="tooltip" class="hidden">
+        <div id="tooltip-content"></div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="hidden">
+        <div class="spinner"></div>
+        <div>Loading...</div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/tree.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

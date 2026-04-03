@@ -1,0 +1,320 @@
+/* ===== Reset and Base Styles ===== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f5f5f5;
+    overflow-x: hidden;
+}
+
+h2, h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+}
+
+/* ===== Control Panel ===== */
+#controls {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    width: 300px;
+}
+
+#controls h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.control-group {
+    margin-bottom: 15px;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
+}
+
+/* ===== Form Elements ===== */
+select, input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+select:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+/* ===== Radio Buttons ===== */
+.toggle-switch {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.radio-label input[type="radio"] {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+/* ===== Buttons ===== */
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-family: inherit;
+}
+
+.btn-primary {
+    width: 100%;
+    background: #4CAF50;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.btn-primary:hover {
+    background: #45a049;
+}
+
+.btn-secondary {
+    background: #2196F3;
+    color: white;
+    flex: 1;
+}
+
+.btn-secondary:hover {
+    background: #0b7dda;
+}
+
+.button-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* ===== Info Box ===== */
+.info-box {
+    margin-top: 20px;
+    padding: 12px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #666;
+}
+
+.info-box p {
+    margin: 5px 0;
+}
+
+/* ===== Legend ===== */
+#legend {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-width: 250px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+#legend h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    border: 1px solid #ddd;
+}
+
+/* ===== Visualization ===== */
+#visualization {
+    margin-left: 340px;
+    margin-top: 20px;
+    margin-right: 290px;
+    margin-bottom: 20px;
+}
+
+#tree-svg {
+    display: block;
+    margin: 0 auto;
+}
+
+/* ===== Tree Nodes and Links ===== */
+.node circle {
+    stroke: #333;
+    stroke-width: 1.5px;
+    cursor: pointer;
+    transition: fill 0.3s ease;
+}
+
+.node circle:hover {
+    stroke-width: 2.5px;
+    stroke: #000;
+}
+
+.node text {
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    fill: #333;
+    pointer-events: none;
+}
+
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+}
+
+/* ===== Highlighted Nodes (Search Results) ===== */
+.node.highlighted circle {
+    stroke: #ff6b6b;
+    stroke-width: 3px;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        stroke-width: 3px;
+    }
+    50% {
+        stroke-width: 5px;
+    }
+}
+
+/* ===== Tooltip ===== */
+#tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 12px;
+    border-radius: 5px;
+    pointer-events: none;
+    font-size: 13px;
+    max-width: 300px;
+    z-index: 2000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+#tooltip.hidden {
+    display: none;
+}
+
+#tooltip strong {
+    color: #4CAF50;
+    font-size: 14px;
+}
+
+/* ===== Loading Indicator ===== */
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    color: white;
+    font-size: 18px;
+}
+
+#loading.hidden {
+    display: none;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 1200px) {
+    #controls {
+        width: 250px;
+    }
+
+    #visualization {
+        margin-left: 290px;
+        margin-right: 20px;
+    }
+
+    #legend {
+        position: static;
+        margin: 20px;
+        max-width: none;
+    }
+}
+
+@media (max-width: 768px) {
+    #controls {
+        position: static;
+        width: 100%;
+        margin: 10px;
+        border-radius: 0;
+    }
+
+    #visualization {
+        margin: 10px;
+    }
+
+    #legend {
+        margin: 10px;
+    }
+}
