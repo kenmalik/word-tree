@@ -11,6 +11,25 @@ The project is broken into two parts:
 - **Preprocessing**: Done in Python; cleans the raw speech data (see [here](preprocessing/) for more information)
 - **Visualization**: Done in JavaScript with D3.js; creates word tree visualization from the processed data (see [here](visualization/) for more information)
 
+## Quickstart
+
+To see the visualization, perform the following steps:
+
+1. Preprocess the raw data
+```shell
+cd preprocessing
+python main.py
+```
+
+2. Start the visualization server (multiple options to do this, but using Python's built-in web server for this example)
+```shell
+cd ../visualization
+python -m http.server 8000
+```
+
+This should start serving the visualization at `http://localhost:8000`, which you
+can navigate to using your browser.
+
 ## Features
 
 - **Bidirectional Analysis**: Track words both before and after root words
