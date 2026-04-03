@@ -392,30 +392,29 @@ class WordTree {
             }
         });
 
-        // Add padding
         const padding = 50;
-        const dx = maxX - minX + padding * 2;
-        const dy = maxY - minY + padding * 2;
+        const treeWidth  = maxY - minY || 1;  // d.y range → horizontal screen extent
+        const treeHeight = maxX - minX || 1;  // d.x range → vertical screen extent
 
-        // Calculate scale to fit
         const scale = Math.min(
-            this.width / dy,
-            this.height / dx,
+            (this.width  - 2 * padding) / treeWidth,
+            (this.height - 2 * padding) / treeHeight,
             this.maxZoom
         );
 
-        // Calculate translation to center
-        const translate = [
-            this.width / 2 - scale * (minY + dy / 2),
-            this.height / 2 - scale * (minX + dx / 2)
-        ];
+        // True center of the tree in zoomContainer coordinates,
+        // accounting for the g group's translate(margin.left, height/2) offset.
+        const centerX = this.margin.left + (minY + maxY) / 2;
+        const centerY = this.height / 2  + (minX + maxX) / 2;
 
-        // Apply transform with transition
+        const tx = this.width  / 2 - scale * centerX;
+        const ty = this.height / 2 - scale * centerY;
+
         this.svg.transition()
             .duration(750)
             .call(
                 this.zoom.transform,
-                d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
+                d3.zoomIdentity.translate(tx, ty).scale(scale)
             );
     }
 }
