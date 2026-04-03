@@ -58,6 +58,15 @@ class Controls {
         d3.select('#collapse-all-btn').on('click', () => {
             this.tree.collapseAll();
         });
+
+        // Zoom controls
+        d3.select('#reset-zoom-btn').on('click', () => {
+            this.tree.resetZoom();
+        });
+
+        d3.select('#fit-zoom-btn').on('click', () => {
+            this.tree.zoomToFit();
+        });
     }
 
     /**

@@ -175,11 +175,19 @@ button {
     margin-top: 20px;
     margin-right: 290px;
     margin-bottom: 20px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
 }
 
 #tree-svg {
     display: block;
     margin: 0 auto;
+    cursor: grab;
+}
+
+#tree-svg:active {
+    cursor: grabbing;
 }
 
 /* ===== Tree Nodes and Links ===== */

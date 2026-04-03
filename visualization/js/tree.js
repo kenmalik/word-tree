@@ -11,13 +11,29 @@ class WordTree {
         this.nodeRadius = 5;
         this.colorMode = 'era';
 
+        // Zoom constraints
+        this.minZoom = 0.1;  // Can zoom out to 10% of original size
+        this.maxZoom = 3;    // Can zoom in to 300% of original size
+
         // Create SVG
         this.svg = d3.select(containerId)
             .attr('width', this.width)
             .attr('height', this.height);
 
-        this.g = this.svg.append('g')
+        // Create container group for zoom/pan
+        this.zoomContainer = this.svg.append('g');
+
+        // Create tree group inside zoom container
+        this.g = this.zoomContainer.append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+
+        // Initialize zoom behavior
+        this.zoom = d3.zoom()
+            .scaleExtent([this.minZoom, this.maxZoom])
+            .on('zoom', (event) => this.handleZoom(event));
+
+        // Apply zoom to SVG
+        this.svg.call(this.zoom);
 
         // Create tree layout
         this.treemap = d3.tree()
@@ -48,6 +64,9 @@ class WordTree {
         if (this.root.children) {
             this.root.children.forEach(child => this.collapse(child));
         }
+
+        // Reset zoom to default view
+        this.resetZoom();
 
         // Render
         this.update(this.root);
@@ -266,5 +285,74 @@ class WordTree {
         });
 
         return results.length;
+    }
+
+    /**
+     * Handle zoom/pan events
+     * @param {Object} event - D3 zoom event
+     */
+    handleZoom(event) {
+        this.zoomContainer.attr('transform', event.transform);
+    }
+
+    /**
+     * Reset zoom to initial view
+     */
+    resetZoom() {
+        this.svg.transition()
+            .duration(750)
+            .call(
+                this.zoom.transform,
+                d3.zoomIdentity
+            );
+    }
+
+    /**
+     * Zoom to fit all visible nodes
+     */
+    zoomToFit() {
+        if (!this.root) return;
+
+        // Get bounds of all nodes
+        const nodes = this.root.descendants();
+        if (nodes.length === 0) return;
+
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+
+        nodes.forEach(d => {
+            if (d.x !== undefined && d.y !== undefined) {
+                minX = Math.min(minX, d.x);
+                maxX = Math.max(maxX, d.x);
+                minY = Math.min(minY, d.y);
+                maxY = Math.max(maxY, d.y);
+            }
+        });
+
+        // Add padding
+        const padding = 50;
+        const dx = maxX - minX + padding * 2;
+        const dy = maxY - minY + padding * 2;
+
+        // Calculate scale to fit
+        const scale = Math.min(
+            this.width / dy,
+            this.height / dx,
+            this.maxZoom
+        );
+
+        // Calculate translation to center
+        const translate = [
+            this.width / 2 - scale * (minY + dy / 2),
+            this.height / 2 - scale * (minX + dx / 2)
+        ];
+
+        // Apply transform with transition
+        this.svg.transition()
+            .duration(750)
+            .call(
+                this.zoom.transform,
+                d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
+            );
     }
 }
