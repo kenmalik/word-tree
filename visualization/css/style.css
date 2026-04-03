@@ -175,11 +175,19 @@ button {
     margin-top: 20px;
     margin-right: 290px;
     margin-bottom: 20px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
 }
 
 #tree-svg {
     display: block;
     margin: 0 auto;
+    cursor: grab;
+}
+
+#tree-svg:active {
+    cursor: grabbing;
 }
 
 /* ===== Tree Nodes and Links ===== */
@@ -206,6 +214,17 @@ button {
     fill: none;
     stroke: #ccc;
     stroke-width: 1.5px;
+}
+
+/* ===== Sentinel Nodes (Show More / Show Less) ===== */
+.node.sentinel circle {
+    stroke-dasharray: 4, 3;
+    stroke: #999;
+}
+
+.node.sentinel text {
+    fill: #888;
+    font-style: italic;
 }
 
 /* ===== Highlighted Nodes (Search Results) ===== */
