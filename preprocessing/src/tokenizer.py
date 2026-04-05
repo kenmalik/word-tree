@@ -107,6 +107,12 @@ def tokenize_speech(text: str) -> List[str]:
     Returns:
         List of word tokens
     """
+    # Split hyphenated compounds into separate words (never-before -> never before)
+    text = re.sub(r'(?<=\w)[\-‐‑‒–—]+(?=\w)', ' ', text)
+
+    # Remove remaining dash separators so standalone symbols do not become tokens
+    text = re.sub(r'[\-‐‑‒–—]+', ' ', text)
+
     # Split on whitespace
     tokens = text.split()
 
