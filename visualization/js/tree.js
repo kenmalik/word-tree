@@ -8,7 +8,7 @@ class WordTree {
         this.containerId = containerId;
         this.width = width;
         this.height = height;
-        this.margin = { top: 40, right: 120, bottom: 20, left: 120 };
+        this.margin = { top: 40, right: 260, bottom: 20, left: 120 };
         this.duration = 750; // Animation duration in ms
         this.nodeRadius = 5;
         this.colorMode = 'era';
@@ -202,8 +202,8 @@ class WordTree {
 
         nodeEnter.append('text')
             .attr('dy', '.35em')
-            .attr('x', d => d.children || d._children ? -13 : 13)
-            .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
+            .attr('x', d => this.getLabelOffset(d))
+            .attr('text-anchor', d => this.getLabelAnchor(d))
             .text(d => d.data._isSentinel
                 ? d.data.name
                 : `${d.data.name} (${formatNumber(d.data.value || 0)})`)
@@ -226,6 +226,8 @@ class WordTree {
             .attr('cursor', 'pointer');
 
         nodeUpdate.select('text')
+            .attr('x', d => this.getLabelOffset(d))
+            .attr('text-anchor', d => this.getLabelAnchor(d))
             .style('fill-opacity', 1);
 
         // Remove exiting nodes
@@ -270,6 +272,36 @@ class WordTree {
             d.x0 = d.x;
             d.y0 = d.y;
         });
+    }
+
+    getLabelAnchor(d) {
+        if (d.children || d._children) return 'end';
+        const nearRightEdge = d.y > (this.width - this.margin.right - 160);
+        return nearRightEdge ? 'end' : 'start';
+    }
+
+    getLabelOffset(d) {
+        return this.getLabelAnchor(d) === 'end' ? -13 : 13;
+    }
+
+    /**
+     * Resize SVG and rerender to fit viewport changes.
+     * @param {number} width
+     * @param {number} height
+     */
+    resize(width, height) {
+        this.width = width;
+        this.height = height;
+
+        this.svg
+            .attr('width', this.width)
+            .attr('height', this.height);
+
+        this.g.attr('transform', `translate(${this.margin.left},${this.height / 2})`);
+
+        if (this.root) {
+            this.update(this.root);
+        }
     }
 
     /**
@@ -340,6 +372,12 @@ class WordTree {
         // Find matching nodes
         const results = searchTree(this.root, searchTerm);
 
+        // Reveal matched nodes that are currently hidden in collapsed branches.
+        if (results.length > 0) {
+            results.forEach(node => this.revealNodePath(node));
+            this.update(this.root);
+        }
+
         // Highlight them
         results.forEach(node => {
             const nodeSelection = this.g.selectAll('g.node')
@@ -348,6 +386,37 @@ class WordTree {
         });
 
         return results.length;
+    }
+
+    /**
+     * Expand ancestor chain so a node can be rendered/highlighted.
+     * @param {Object} node - D3 hierarchy node
+     */
+    revealNodePath(node) {
+        let current = node;
+
+        while (current && current.parent) {
+            const parent = current.parent;
+
+            if (parent._children && !parent.children) {
+                if (!parent._allChildren) parent._allChildren = parent._children;
+
+                const idx = parent._allChildren.indexOf(current);
+                parent._visibleCount = Math.max(SUBSET_SIZE, idx + 1);
+                parent._visibleCount = Math.min(parent._visibleCount, parent._allChildren.length);
+
+                this.renderChildren(parent);
+                parent._children = null;
+            } else if (parent.children && parent._allChildren && typeof parent._visibleCount === 'number') {
+                const idx = parent._allChildren.indexOf(current);
+                if (idx >= parent._visibleCount) {
+                    parent._visibleCount = Math.min(idx + 1, parent._allChildren.length);
+                    this.renderChildren(parent);
+                }
+            }
+
+            current = parent;
+        }
     }
 
     /**

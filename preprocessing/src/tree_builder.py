@@ -88,6 +88,12 @@ def build_tree(occurrences: List[Tuple[List[str], Dict]], root: str) -> Dict:
         word = sequence[0]
         word_normalized = normalize_word(word)
 
+        # Skip tokens that normalize to empty strings.
+        if not word_normalized:
+            if len(sequence) > 1:
+                add_sequence_to_tree(tree_node, sequence[1:], metadata, depth)
+            return
+
         # Initialize children dict if not exists
         if 'children' not in tree_node:
             tree_node['children'] = {}
@@ -119,11 +125,13 @@ def build_tree(occurrences: List[Tuple[List[str], Dict]], root: str) -> Dict:
     # Initialize root node
     tree = {
         'name': root,
+        'value': 0,
         'children': {}
     }
 
     # Add all occurrences to tree
     for context_words, metadata in occurrences:
+        tree['value'] += 1
         add_sequence_to_tree(tree, context_words, metadata)
 
     return tree

@@ -5,6 +5,7 @@ Speech loading and tokenization functionality.
 import json
 import os
 import re
+import html
 from typing import List, Dict, Set
 
 
@@ -74,6 +75,10 @@ def clean_text(text: str) -> str:
     # Remove HTML tags like <br />, <p>, etc.
     text = re.sub(r'<[^>]+>', ' ', text)
 
+    # Decode entities like &nbsp; and &amp;
+    text = html.unescape(text)
+    text = text.replace('\xa0', ' ')
+
     # Remove \r\n escape sequences
     text = text.replace('\\r\\n', ' ')
     text = text.replace('\r\n', ' ')
@@ -102,6 +107,12 @@ def tokenize_speech(text: str) -> List[str]:
     Returns:
         List of word tokens
     """
+    # Split hyphenated compounds into separate words (never-before -> never before)
+    text = re.sub(r'(?<=\w)[\-‐‑‒–—]+(?=\w)', ' ', text)
+
+    # Remove remaining dash separators so standalone symbols do not become tokens
+    text = re.sub(r'[\-‐‑‒–—]+', ' ', text)
+
     # Split on whitespace
     tokens = text.split()
 
@@ -137,8 +148,22 @@ def normalize_word(word: str) -> str:
     Returns:
         Lowercase word without punctuation
     """
-    word = strip_punctuation(word)
+    # Normalize common Unicode punctuation to improve token consistency.
+    word = html.unescape(word)
+    word = (word
+        .replace('’', "'")
+        .replace('‘', "'")
+        .replace('“', '"')
+        .replace('”', '"')
+        .replace('—', '-')
+        .replace('–', '-')
+        .replace('…', '...'))
+
     word = word.lower()
+
+    # Remove non-word punctuation at boundaries while preserving inner apostrophes.
+    word = re.sub(r"^[^a-z0-9']+", '', word)
+    word = re.sub(r"[^a-z0-9']+$", '', word)
 
     return word
 

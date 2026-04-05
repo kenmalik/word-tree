@@ -175,6 +175,7 @@ button {
     margin-top: 20px;
     margin-right: 290px;
     margin-bottom: 20px;
+    overflow: auto;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;

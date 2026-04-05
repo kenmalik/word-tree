@@ -7,6 +7,9 @@ class Controls {
         this.dataLoader = dataLoader;
         this.currentRootWord = 'we';
         this.currentDirection = 'after';
+        this.currentFilterType = 'none';
+        this.currentFilterValue = '';
+        this.rawTreeData = null;
         this.currentPage = 1;
         this.pageSize = 10;
 
@@ -33,6 +36,27 @@ class Controls {
         d3.select('#color-mode-select').on('change', (event) => {
             this.tree.setColorMode(event.target.value);
             this.updateLegend(event.target.value);
+        });
+
+        // Filtering controls
+        d3.select('#filter-type-select').on('change', (event) => {
+            this.currentFilterType = event.target.value;
+            this.currentFilterValue = '';
+            this.updateFilterValueOptions();
+            this.applyFiltersAndRender();
+        });
+
+        d3.select('#filter-value-select').on('change', (event) => {
+            this.currentFilterValue = event.target.value;
+            this.applyFiltersAndRender();
+        });
+
+        d3.select('#clear-filter-btn').on('click', () => {
+            this.currentFilterType = 'none';
+            this.currentFilterValue = '';
+            d3.select('#filter-type-select').property('value', 'none');
+            this.updateFilterValueOptions();
+            this.applyFiltersAndRender();
         });
 
         // Search functionality
@@ -98,6 +122,58 @@ class Controls {
         this.updatePageControls();
     }
 
+    updateFilterValueOptions() {
+        const select = d3.select('#filter-value-select');
+        select.html('');
+
+        if (this.currentFilterType === 'none') {
+            select.append('option')
+                .attr('value', '')
+                .text('Select a filter value');
+            select.property('disabled', true);
+            return;
+        }
+
+        select.property('disabled', false);
+        select.append('option')
+            .attr('value', '')
+            .text(`All ${this.currentFilterType === 'era' ? 'eras' : 'speakers'}`);
+
+        const values = this.currentFilterType === 'era'
+            ? ERA_ORDER
+            : (this.dataLoader.metadata?.metadata?.presidents || []);
+
+        values.forEach((value) => {
+            select.append('option')
+                .attr('value', value)
+                .text(value);
+        });
+
+        select.property('value', this.currentFilterValue || '');
+    }
+
+    applyFiltersAndRender() {
+        if (!this.rawTreeData) return;
+
+        let dataToRender = this.rawTreeData;
+
+        if (this.currentFilterType !== 'none' && this.currentFilterValue) {
+            const filtered = filterTreeByMetadata(
+                this.rawTreeData,
+                this.currentFilterType,
+                this.currentFilterValue
+            );
+
+            if (filtered) {
+                dataToRender = filtered;
+            }
+        }
+
+        this.tree.loadData(dataToRender);
+        this.currentPage = 1;
+        this.applyPage();
+    }
+
     updatePageControls() {
         const totalPages = Math.ceil(this.tree.totalRootChildren / this.pageSize);
         d3.select('#page-indicator').text(`Page ${this.currentPage} of ${totalPages}`);
@@ -134,9 +210,9 @@ class Controls {
                 this.currentRootWord,
                 this.currentDirection
             );
-            this.tree.loadData(data);
-            this.currentPage = 1;
-            this.applyPage();
+            this.rawTreeData = data;
+            this.updateFilterValueOptions();
+            this.applyFiltersAndRender();
 
             // Clear search highlights when loading new data
             d3.select('#search-input').property('value', '');
