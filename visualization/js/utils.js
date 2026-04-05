@@ -134,6 +134,51 @@ function formatNumber(num) {
 }
 
 /**
+ * Filter tree by dominant metadata bucket presence.
+ * Keeps only nodes where selected era or speaker is in node metadata
+ * and any ancestors that keep matching descendants connected
+ * @param {Object} root - Tree root object
+ * @param {string} filterType - Either 'era' or 'speaker'
+ * @param {string} filterValue - Selected era/speaker value
+ * @returns {Object|null} - Filtered tree or null if no matches
+ */
+function filterTreeByMetadata(root, filterType, filterValue) {
+    if (!root || !filterType || !filterValue) return root;
+
+    const bucketKey = filterType === 'era' ? 'eras' : 'speakers';
+
+    const cloneAndFilter = (node, isRoot = false) => {
+        const children = Array.isArray(node.children) ? node.children : [];
+        const filteredChildren = children
+            .map(child => cloneAndFilter(child, false))
+            .filter(Boolean);
+
+        const count = node.metadata?.[bucketKey]?.[filterValue] || 0;
+        const nodeMatches = count > 0;
+
+        if (!isRoot && !nodeMatches && filteredChildren.length === 0) {
+            return null;
+        }
+
+        const nextNode = { ...node };
+
+        if (filteredChildren.length > 0) {
+            nextNode.children = filteredChildren;
+        } else {
+            delete nextNode.children;
+        }
+
+        if (!isRoot && count > 0 && typeof nextNode.value === 'number') {
+            nextNode.value = count;
+        }
+
+        return nextNode;
+    };
+
+    return cloneAndFilter(root, true);
+}
+
+/**
  * Show loading indicator
  */
 function showLoading() {

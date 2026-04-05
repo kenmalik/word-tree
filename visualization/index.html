@@ -64,6 +64,21 @@
         </div>
 
         <div class="control-group">
+            <label for="filter-type-select">Filter By:</label>
+            <select id="filter-type-select">
+                <option value="none" selected>No Filter</option>
+                <option value="era">Historical Era</option>
+                <option value="speaker">Speaker (President)</option>
+            </select>
+            <select id="filter-value-select" style="margin-top: 8px;" disabled>
+                <option value="">Select a filter value</option>
+            </select>
+            <div class="button-row">
+                <button id="clear-filter-btn" class="btn-secondary">Clear Filter</button>
+            </div>
+        </div>
+
+        <div class="control-group">
             <label for="search-input">Search:</label>
             <input type="text" id="search-input" placeholder="Search for a word...">
             <div class="button-row">

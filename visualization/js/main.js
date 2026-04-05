@@ -70,10 +70,24 @@ class DataLoader {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Initializing Presidential Speech Word Tree...');
 
+    const getTreeDimensions = () => {
+        const viz = document.getElementById('visualization');
+        const width = Math.max(2000, (viz?.clientWidth || window.innerWidth) - 20);
+        const height = Math.max(2000, window.innerHeight - 40);
+        return { width, height };
+    };
+
+    const dims = getTreeDimensions();
+
     // Create instances
     const dataLoader = new DataLoader();
-    const tree = new WordTree('#tree-svg', 1400, 900);
+    const tree = new WordTree('#tree-svg', dims.width, dims.height);
     const controls = new Controls(tree, dataLoader);
+
+    window.addEventListener('resize', () => {
+        const next = getTreeDimensions();
+        tree.resize(next.width, next.height);
+    });
 
     try {
         // Load metadata
@@ -93,7 +107,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('Initialization complete!');
     } catch (error) {
         console.error('Initialization error:', error);
-        alert('Failed to initialize visualization. Please refresh the page.');
+        const msg = String(error?.message || '');
+        if (msg.includes('404')) {
+            alert('Failed to load visualization data. Run preprocessing/main.py first, then serve the visualization directory.');
+        } else {
+            alert('Failed to initialize visualization. Please refresh the page.');
+        }
     } finally {
         hideLoading();
     }
