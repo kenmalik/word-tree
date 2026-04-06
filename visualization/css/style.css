@@ -29,9 +29,18 @@ h2, h3 {
     width: 300px;
 }
 
-#controls h2 {
+#header h2 {
     font-size: 18px;
-    margin-bottom: 20px;
+    margin-bottom: 4px;
+}
+
+#header h3 {
+    font-weight: normal;
+    font-size: 12px;
+}
+
+#header {
+    margin-bottom: 24px;
 }
 
 .control-group {
