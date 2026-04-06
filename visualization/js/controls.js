@@ -29,23 +29,6 @@ class Controls {
             this.loadTreeData();
         });
 
-        // Search functionality
-        d3.select('#search-btn').on('click', () => {
-            this.performSearch();
-        });
-
-        // Allow Enter key to trigger search
-        d3.select('#search-input').on('keypress', (event) => {
-            if (event.key === 'Enter') {
-                this.performSearch();
-            }
-        });
-
-        d3.select('#clear-search-btn').on('click', () => {
-            d3.select('#search-input').property('value', '');
-            this.tree.highlightNodes('');
-        });
-
         // Expand/Collapse all
         d3.select('#expand-all-btn').on('click', () => {
             this.tree.expandAll();
@@ -96,24 +79,6 @@ class Controls {
     }
 
     /**
-     * Perform search and show results
-     */
-    performSearch() {
-        const searchTerm = d3.select('#search-input').property('value');
-        if (!searchTerm.trim()) {
-            alert('Please enter a search term');
-            return;
-        }
-
-        const count = this.tree.highlightNodes(searchTerm);
-        if (count > 0) {
-            alert(`Found ${count} node${count > 1 ? 's' : ''} matching "${searchTerm}"`);
-        } else {
-            alert(`No nodes found matching "${searchTerm}"`);
-        }
-    }
-
-    /**
      * Load tree data for current root word and direction
      */
     async loadTreeData() {
@@ -129,8 +94,6 @@ class Controls {
             this.applyPage();
             this.tree.zoomToFit(0);
 
-            // Clear search highlights when loading new data
-            d3.select('#search-input').property('value', '');
         } catch (error) {
             console.error('Error loading tree data:', error);
             alert('Error loading data. Please try again.');

@@ -60,34 +60,6 @@ function getNodeColor(node) {
 }
 
 /**
- * Search tree for nodes containing a word
- * @param {Object} node - Root node to search from
- * @param {string} searchTerm - Term to search for
- * @param {Array} results - Accumulator for results
- * @returns {Array} - Array of matching nodes
- */
-function searchTree(node, searchTerm, results = []) {
-    const normalizedTerm = searchTerm.toLowerCase().trim();
-    if (!normalizedTerm) return results;
-
-    const nodeName = node.data.name.toLowerCase();
-
-    if (nodeName.includes(normalizedTerm)) {
-        results.push(node);
-    }
-
-    if (node.children) {
-        node.children.forEach(child => searchTree(child, searchTerm, results));
-    }
-
-    if (node._children) {
-        node._children.forEach(child => searchTree(child, searchTerm, results));
-    }
-
-    return results;
-}
-
-/**
  * Format number with commas for better readability
  * @param {number} num - Number to format
  * @returns {string} - Formatted number string

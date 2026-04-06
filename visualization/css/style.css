@@ -238,22 +238,6 @@ button {
     font-style: italic;
 }
 
-/* ===== Highlighted Nodes (Search Results) ===== */
-.node.highlighted circle {
-    stroke: #ff6b6b;
-    stroke-width: 3px;
-    animation: pulse 1s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        stroke-width: 3px;
-    }
-    50% {
-        stroke-width: 5px;
-    }
-}
-
 /* ===== Tooltip ===== */
 #tooltip {
     position: absolute;

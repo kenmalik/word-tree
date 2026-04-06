@@ -313,30 +313,6 @@ class WordTree {
     }
 
     /**
-     * Highlight nodes matching search term
-     * @param {string} searchTerm - Term to search for
-     * @returns {number} - Number of matching nodes
-     */
-    highlightNodes(searchTerm) {
-        // Clear previous highlights
-        this.g.selectAll('g.node').classed('highlighted', false);
-
-        if (!searchTerm || !this.root) return 0;
-
-        // Find matching nodes
-        const results = searchTree(this.root, searchTerm);
-
-        // Highlight them
-        results.forEach(node => {
-            const nodeSelection = this.g.selectAll('g.node')
-                .filter(d => d === node);
-            nodeSelection.classed('highlighted', true);
-        });
-
-        return results.length;
-    }
-
-    /**
      * Handle zoom/pan events
      * @param {Object} event - D3 zoom event
      */
