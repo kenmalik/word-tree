@@ -2,6 +2,7 @@
 Speech loading and tokenization functionality.
 """
 
+import html
 import json
 import os
 import re
@@ -73,6 +74,14 @@ def clean_text(text: str) -> str:
     """
     # Remove HTML tags like <br />, <p>, etc.
     text = re.sub(r'<[^>]+>', ' ', text)
+
+    # Decode HTML character entities (&#39; → ', &rsquo; → ', etc.)
+    text = html.unescape(text)
+
+    # Normalize Unicode apostrophe variants to straight apostrophe (U+0027)
+    text = text.replace('\u2019', "'")  # right curly quote '
+    text = text.replace('\u2018', "'")  # left curly quote  '
+    text = text.replace('\u0060', "'")  # backtick          `
 
     # Remove \r\n escape sequences
     text = text.replace('\\r\\n', ' ')
