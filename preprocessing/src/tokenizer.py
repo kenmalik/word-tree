@@ -83,6 +83,10 @@ def clean_text(text: str) -> str:
     text = text.replace('\u2018', "'")  # left curly quote  '
     text = text.replace('\u0060', "'")  # backtick          `
 
+    # Normalize Unicode double quote variants to straight double quote (U+0022)
+    text = text.replace('\u201c', '"')  # left double curly  "
+    text = text.replace('\u201d', '"')  # right double curly "
+
     # Replace dash variants with a space so they split adjacent words
     text = text.replace('--', ' ')      # double hyphen (ASCII em-dash substitute); first to handle ---
     text = text.replace('\u2014', ' ')  # em dash  —
