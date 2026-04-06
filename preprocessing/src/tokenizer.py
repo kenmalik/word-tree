@@ -92,6 +92,15 @@ def clean_text(text: str) -> str:
     text = text.replace('\u2014', ' ')  # em dash  —
     text = text.replace('\u2013', ' ')  # en dash  –
 
+    # Split punctuation used as word separators with no surrounding spaces.
+    # Ellipsis handled first so its dots are consumed before the abbreviation-safe regex runs.
+    text = text.replace('\u2026', ' ')  # unicode ellipsis …
+    text = text.replace('...', ' ')     # ASCII ellipsis
+
+    # Insert a space wherever ,;:!? directly connect two letters.
+    # Excludes . so abbreviations like U.S. and H.R. are preserved.
+    text = re.sub(r'(?<=[a-zA-Z])[,;:!?]+(?=[a-zA-Z])', ' ', text)
+
     # Remove \r\n escape sequences
     text = text.replace('\\r\\n', ' ')
     text = text.replace('\r\n', ' ')
