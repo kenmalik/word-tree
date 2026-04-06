@@ -197,7 +197,7 @@ class WordTree {
             .attr('r', 1e-6)
             .style('fill', d => {
                 if (d.data._isSentinel) return '#ccc';
-                return d._children ? 'lightsteelblue' : '#fff';
+                return getNodeColor(d, this.colorMode);
             });
 
         nodeEnter.append('text')
@@ -220,7 +220,6 @@ class WordTree {
             .attr('r', this.nodeRadius)
             .style('fill', d => {
                 if (d.data._isSentinel) return '#ccc';
-                if (d._children) return 'lightsteelblue';
                 return getNodeColor(d, this.colorMode);
             })
             .attr('cursor', 'pointer');
