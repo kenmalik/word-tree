@@ -61,8 +61,7 @@ class WordTree {
         // Save full sorted children list for pagination
         this.allRootChildren = this.root.children ? [...this.root.children] : [];
 
-        // Reset zoom to default view
-        this.resetZoom();
+        // Zoom will be set after first render
     }
 
     /**
@@ -360,7 +359,7 @@ class WordTree {
     /**
      * Zoom to fit all visible nodes
      */
-    zoomToFit() {
+    zoomToFit(duration = this.duration) {
         if (!this.root) return;
 
         // Get bounds of all nodes
@@ -398,7 +397,7 @@ class WordTree {
         const ty = this.height / 2 - scale * centerY;
 
         this.svg.transition()
-            .duration(750)
+            .duration(duration)
             .call(
                 this.zoom.transform,
                 d3.zoomIdentity.translate(tx, ty).scale(scale)

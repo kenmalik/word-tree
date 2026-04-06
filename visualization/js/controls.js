@@ -56,10 +56,6 @@ class Controls {
         });
 
         // Zoom controls
-        d3.select('#reset-zoom-btn').on('click', () => {
-            this.tree.resetZoom();
-        });
-
         d3.select('#fit-zoom-btn').on('click', () => {
             this.tree.zoomToFit();
         });
@@ -131,6 +127,7 @@ class Controls {
             this.tree.loadData(data);
             this.currentPage = 1;
             this.applyPage();
+            this.tree.zoomToFit(0);
 
             // Clear search highlights when loading new data
             d3.select('#search-input').property('value', '');
