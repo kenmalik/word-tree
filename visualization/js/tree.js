@@ -11,7 +11,6 @@ class WordTree {
         this.margin = { top: 40, right: 120, bottom: 20, left: 120 };
         this.duration = 750; // Animation duration in ms
         this.nodeRadius = 5;
-        this.colorMode = 'era';
 
         // Zoom constraints
         this.minZoom = 0.1;  // Can zoom out to 10% of original size
@@ -19,8 +18,8 @@ class WordTree {
 
         // Create SVG
         this.svg = d3.select(containerId)
-            .attr('width', this.width)
-            .attr('height', this.height);
+            .attr('width', '100%')
+            .attr('height', '100%');
 
         // Create container group for zoom/pan
         this.zoomContainer = this.svg.append('g');
@@ -62,8 +61,7 @@ class WordTree {
         // Save full sorted children list for pagination
         this.allRootChildren = this.root.children ? [...this.root.children] : [];
 
-        // Reset zoom to default view
-        this.resetZoom();
+        // Zoom will be set after first render
     }
 
     /**
@@ -191,13 +189,13 @@ class WordTree {
         const nodeEnter = node.enter().append('g')
             .attr('class', d => d.data._isSentinel ? 'node sentinel' : 'node')
             .attr('transform', d => `translate(${source.y0},${source.x0})`)
-            .on('click', (event, d) => this.click(event, d));
+            .on('click', (event, d) => { if (d.depth !== 0) this.click(event, d); });
 
         nodeEnter.append('circle')
             .attr('r', 1e-6)
             .style('fill', d => {
                 if (d.data._isSentinel) return '#ccc';
-                return d._children ? 'lightsteelblue' : '#fff';
+                return getNodeColor(d);
             });
 
         nodeEnter.append('text')
@@ -206,7 +204,7 @@ class WordTree {
             .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
             .text(d => d.data._isSentinel
                 ? d.data.name
-                : `${d.data.name} (${formatNumber(d.data.value || 0)})`)
+                : d.depth === 0 ? d.data.name : `${d.data.name} (${formatNumber(d.data.value || 0)})`)
             .style('fill-opacity', 1e-6);
 
         // Transition nodes to their new position
@@ -220,10 +218,9 @@ class WordTree {
             .attr('r', this.nodeRadius)
             .style('fill', d => {
                 if (d.data._isSentinel) return '#ccc';
-                if (d._children) return 'lightsteelblue';
-                return getNodeColor(d, this.colorMode);
+                return getNodeColor(d);
             })
-            .attr('cursor', 'pointer');
+            .attr('cursor', d => d.depth === 0 ? 'default' : 'pointer');
 
         nodeUpdate.select('text')
             .style('fill-opacity', 1);
@@ -316,41 +313,6 @@ class WordTree {
     }
 
     /**
-     * Set color mode and refresh visualization
-     * @param {string} mode - Either 'era' or 'speaker'
-     */
-    setColorMode(mode) {
-        this.colorMode = mode;
-        if (this.root) {
-            this.update(this.root);
-        }
-    }
-
-    /**
-     * Highlight nodes matching search term
-     * @param {string} searchTerm - Term to search for
-     * @returns {number} - Number of matching nodes
-     */
-    highlightNodes(searchTerm) {
-        // Clear previous highlights
-        this.g.selectAll('g.node').classed('highlighted', false);
-
-        if (!searchTerm || !this.root) return 0;
-
-        // Find matching nodes
-        const results = searchTree(this.root, searchTerm);
-
-        // Highlight them
-        results.forEach(node => {
-            const nodeSelection = this.g.selectAll('g.node')
-                .filter(d => d === node);
-            nodeSelection.classed('highlighted', true);
-        });
-
-        return results.length;
-    }
-
-    /**
      * Handle zoom/pan events
      * @param {Object} event - D3 zoom event
      */
@@ -373,7 +335,7 @@ class WordTree {
     /**
      * Zoom to fit all visible nodes
      */
-    zoomToFit() {
+    zoomToFit(duration = this.duration) {
         if (!this.root) return;
 
         // Get bounds of all nodes
@@ -411,7 +373,7 @@ class WordTree {
         const ty = this.height / 2 - scale * centerY;
 
         this.svg.transition()
-            .duration(750)
+            .duration(duration)
             .call(
                 this.zoom.transform,
                 d3.zoomIdentity.translate(tx, ty).scale(scale)

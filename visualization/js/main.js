@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Create instances
     const dataLoader = new DataLoader();
-    const tree = new WordTree('#tree-svg', 1400, 900);
+    const tree = new WordTree('#tree-svg', window.innerWidth, window.innerHeight);
     const controls = new Controls(tree, dataLoader);
 
     try {
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await controls.loadTreeData();
 
         // Initialize legend
-        controls.updateLegend('era');
+        controls.updateLegend();
 
         // Add tooltip functionality
         addTooltipHandlers(tree);
@@ -115,7 +115,7 @@ function addTooltipHandlers(tree) {
             const nodeGroup = d3.select(target.closest('g.node'));
             const nodeData = nodeGroup.datum();
 
-            if (nodeData) {
+            if (nodeData && nodeData.depth !== 0 && !nodeData.data._isSentinel) {
                 const content = getTooltipContent(nodeData);
 
                 tooltip.select('#tooltip-content').html(content);

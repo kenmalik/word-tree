@@ -48,79 +48,15 @@ function getDominantEra(metadata) {
 }
 
 /**
- * Get dominant speaker from metadata
- * @param {Object} metadata - Node metadata containing speaker counts
- * @returns {string} - Most common speaker name
- */
-function getDominantSpeaker(metadata) {
-    if (!metadata || !metadata.speakers) return "Unknown";
-
-    const speakers = metadata.speakers;
-    let maxCount = 0;
-    let dominantSpeaker = "Unknown";
-
-    for (const [speaker, count] of Object.entries(speakers)) {
-        if (count > maxCount) {
-            maxCount = count;
-            dominantSpeaker = speaker;
-        }
-    }
-
-    return dominantSpeaker;
-}
-
-/**
- * Get color for a node based on current color mode
+ * Get color for a node based on its dominant historical era
  * @param {Object} node - D3 hierarchy node
- * @param {string} colorMode - Either 'era' or 'speaker'
  * @returns {string} - Hex color code
  */
-function getNodeColor(node, colorMode) {
+function getNodeColor(node) {
     const colorScale = createEraColorScale();
-
-    if (colorMode === 'era') {
-        const era = getDominantEra(node.data.metadata);
-        const eraIndex = ERA_ORDER.indexOf(era);
-        return eraIndex >= 0 ? colorScale(eraIndex) : '#999';
-    } else if (colorMode === 'speaker') {
-        // Simple hash function for consistent speaker colors
-        const speaker = getDominantSpeaker(node.data.metadata);
-        const hash = speaker.split('').reduce((acc, char) => {
-            return char.charCodeAt(0) + ((acc << 5) - acc);
-        }, 0);
-        const index = Math.abs(hash) % 10;
-        return d3.schemeCategory10[index];
-    }
-
-    return '#69b3a2'; // Default color
-}
-
-/**
- * Search tree for nodes containing a word
- * @param {Object} node - Root node to search from
- * @param {string} searchTerm - Term to search for
- * @param {Array} results - Accumulator for results
- * @returns {Array} - Array of matching nodes
- */
-function searchTree(node, searchTerm, results = []) {
-    const normalizedTerm = searchTerm.toLowerCase().trim();
-    if (!normalizedTerm) return results;
-
-    const nodeName = node.data.name.toLowerCase();
-
-    if (nodeName.includes(normalizedTerm)) {
-        results.push(node);
-    }
-
-    if (node.children) {
-        node.children.forEach(child => searchTree(child, searchTerm, results));
-    }
-
-    if (node._children) {
-        node._children.forEach(child => searchTree(child, searchTerm, results));
-    }
-
-    return results;
+    const era = getDominantEra(node.data.metadata);
+    const eraIndex = ERA_ORDER.indexOf(era);
+    return eraIndex >= 0 ? colorScale(eraIndex) : '#999';
 }
 
 /**

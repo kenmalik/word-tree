@@ -11,7 +11,10 @@
 <body>
     <!-- Control Panel -->
     <div id="controls">
-        <h2>Word Tree Explorer</h2>
+        <div id="header">
+            <h2>Presidential Speech Word Tree</h2>
+            <h3>Colored by era</h3>
+        </div>
 
         <div class="control-group">
             <label for="root-word-select">Root Word:</label>
@@ -56,29 +59,8 @@
         </div>
 
         <div class="control-group">
-            <label for="color-mode-select">Color By:</label>
-            <select id="color-mode-select">
-                <option value="era">Historical Era</option>
-                <option value="speaker">Speaker (President)</option>
-            </select>
-        </div>
-
-        <div class="control-group">
-            <label for="search-input">Search:</label>
-            <input type="text" id="search-input" placeholder="Search for a word...">
-            <div class="button-row">
-                <button id="search-btn" class="btn-secondary">Find</button>
-                <button id="clear-search-btn" class="btn-secondary">Clear</button>
-            </div>
-        </div>
-
-        <div class="control-group">
             <button id="expand-all-btn" class="btn-primary">Expand All</button>
             <button id="collapse-all-btn" class="btn-primary">Collapse All</button>
-        </div>
-
-        <div class="control-group">
-            <button id="reset-zoom-btn" class="btn-primary">Reset Zoom</button>
             <button id="fit-zoom-btn" class="btn-primary">Fit to Screen</button>
         </div>
 
