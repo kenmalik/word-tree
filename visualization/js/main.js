@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Create instances
     const dataLoader = new DataLoader();
-    const tree = new WordTree('#tree-svg', 1400, 900);
+    const tree = new WordTree('#tree-svg', window.innerWidth, window.innerHeight);
     const controls = new Controls(tree, dataLoader);
 
     try {

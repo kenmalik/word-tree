@@ -18,8 +18,8 @@ class WordTree {
 
         // Create SVG
         this.svg = d3.select(containerId)
-            .attr('width', this.width)
-            .attr('height', this.height);
+            .attr('width', '100%')
+            .attr('height', '100%');
 
         // Create container group for zoom/pan
         this.zoomContainer = this.svg.append('g');
