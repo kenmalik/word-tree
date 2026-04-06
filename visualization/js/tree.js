@@ -204,7 +204,7 @@ class WordTree {
             .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
             .text(d => d.data._isSentinel
                 ? d.data.name
-                : `${d.data.name} (${formatNumber(d.data.value || 0)})`)
+                : d.depth === 0 ? d.data.name : `${d.data.name} (${formatNumber(d.data.value || 0)})`)
             .style('fill-opacity', 1e-6);
 
         // Transition nodes to their new position
