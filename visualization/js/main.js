@@ -115,7 +115,7 @@ function addTooltipHandlers(tree) {
             const nodeGroup = d3.select(target.closest('g.node'));
             const nodeData = nodeGroup.datum();
 
-            if (nodeData) {
+            if (nodeData && nodeData.depth !== 0 && !nodeData.data._isSentinel) {
                 const content = getTooltipContent(nodeData);
 
                 tooltip.select('#tooltip-content').html(content);
