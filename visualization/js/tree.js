@@ -11,7 +11,6 @@ class WordTree {
         this.margin = { top: 40, right: 120, bottom: 20, left: 120 };
         this.duration = 750; // Animation duration in ms
         this.nodeRadius = 5;
-        this.colorMode = 'era';
 
         // Zoom constraints
         this.minZoom = 0.1;  // Can zoom out to 10% of original size
@@ -197,7 +196,7 @@ class WordTree {
             .attr('r', 1e-6)
             .style('fill', d => {
                 if (d.data._isSentinel) return '#ccc';
-                return getNodeColor(d, this.colorMode);
+                return getNodeColor(d);
             });
 
         nodeEnter.append('text')
@@ -220,7 +219,7 @@ class WordTree {
             .attr('r', this.nodeRadius)
             .style('fill', d => {
                 if (d.data._isSentinel) return '#ccc';
-                return getNodeColor(d, this.colorMode);
+                return getNodeColor(d);
             })
             .attr('cursor', 'pointer');
 
@@ -310,17 +309,6 @@ class WordTree {
     collapseAll() {
         if (this.root && this.root.children) {
             this.root.children.forEach(child => this.collapse(child));
-            this.update(this.root);
-        }
-    }
-
-    /**
-     * Set color mode and refresh visualization
-     * @param {string} mode - Either 'era' or 'speaker'
-     */
-    setColorMode(mode) {
-        this.colorMode = mode;
-        if (this.root) {
             this.update(this.root);
         }
     }

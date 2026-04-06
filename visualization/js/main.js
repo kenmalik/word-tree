@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await controls.loadTreeData();
 
         // Initialize legend
-        controls.updateLegend('era');
+        controls.updateLegend();
 
         // Add tooltip functionality
         addTooltipHandlers(tree);
