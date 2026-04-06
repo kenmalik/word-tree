@@ -189,7 +189,7 @@ class WordTree {
         const nodeEnter = node.enter().append('g')
             .attr('class', d => d.data._isSentinel ? 'node sentinel' : 'node')
             .attr('transform', d => `translate(${source.y0},${source.x0})`)
-            .on('click', (event, d) => this.click(event, d));
+            .on('click', (event, d) => { if (d.depth !== 0) this.click(event, d); });
 
         nodeEnter.append('circle')
             .attr('r', 1e-6)
@@ -220,7 +220,7 @@ class WordTree {
                 if (d.data._isSentinel) return '#ccc';
                 return getNodeColor(d);
             })
-            .attr('cursor', 'pointer');
+            .attr('cursor', d => d.depth === 0 ? 'default' : 'pointer');
 
         nodeUpdate.select('text')
             .style('fill-opacity', 1);
