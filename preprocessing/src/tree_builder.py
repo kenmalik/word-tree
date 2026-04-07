@@ -88,6 +88,11 @@ def build_tree(occurrences: List[Tuple[List[str], Dict]], root: str) -> Dict:
         word = sequence[0]
         word_normalized = normalize_word(word)
 
+        # Skip punctuation-only tokens (normalize to empty string) and continue
+        if not word_normalized:
+            add_sequence_to_tree(tree_node, sequence[1:], metadata, depth)
+            return
+
         # Initialize children dict if not exists
         if 'children' not in tree_node:
             tree_node['children'] = {}
