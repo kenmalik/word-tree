@@ -157,7 +157,7 @@ function getTooltipContent(nodeData) {
     const metadata = nodeData.data.metadata;
 
     let html = `<strong>${name}</strong><br>`;
-    html += `Occurrences: ${formatNumber(value)}<br>`;
+    html += `Total Occurrences: ${formatNumber(value)}<br>`;
 
     if (metadata) {
         // Add era information

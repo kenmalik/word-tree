@@ -9,6 +9,8 @@ class Controls {
         this.currentDirection = 'after';
         this.currentPage = 1;
         this.pageSize = 10;
+        this.currentFilterType = 'none';
+        this.currentFilterValue = null;
 
         this.initEventListeners();
     }
@@ -48,6 +50,26 @@ class Controls {
             this.pageSize = +d3.select('#page-size-select').property('value');
             this.currentPage = 1;
             this.applyPage();
+        });
+
+        // Filter type select
+        d3.select('#filter-type-select').on('change', (event) => {
+            this.currentFilterType = event.target.value;
+            if (this.currentFilterType === 'none') {
+                d3.select('#filter-value-select').style('display', 'none');
+                this.currentFilterValue = null;
+                this.tree.setFilter('none', null);
+            } else {
+                this.populateFilterDropdown(this.currentFilterType);
+                d3.select('#filter-value-select').style('display', null);
+                this.tree.setFilter(this.currentFilterType, this.currentFilterValue);
+            }
+        });
+
+        // Filter value dropdown
+        d3.select('#filter-value-select').on('change', (event) => {
+            this.currentFilterValue = event.target.value;
+            this.tree.setFilter(this.currentFilterType, this.currentFilterValue);
         });
 
         d3.select('#page-prev').on('click', () => {
@@ -100,6 +122,16 @@ class Controls {
         } finally {
             hideLoading();
         }
+    }
+
+    populateFilterDropdown(type) {
+        const items = type === 'president'
+            ? this.dataLoader.metadata.metadata.presidents
+            : this.dataLoader.metadata.metadata.eras;
+        const select = d3.select('#filter-value-select');
+        select.html('');
+        items.forEach(item => select.append('option').attr('value', item).text(item));
+        this.currentFilterValue = items[0];
     }
 
     updateLegend() {

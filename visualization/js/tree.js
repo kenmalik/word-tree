@@ -42,6 +42,30 @@ class WordTree {
 
         this.root = null;
         this.i = 0; // Node ID counter
+
+        this.filterType = 'none';
+        this.filterValue = null;
+    }
+
+    setFilter(type, value) {
+        this.filterType = type;
+        this.filterValue = value;
+        if (this.root && this.currentPage !== undefined) {
+            this.setPage(this.currentPage, this.currentPageSize);
+        }
+    }
+
+    getFilteredCount(d) {
+        if (this.filterType === 'none') return d.data.value || 0;
+        const meta = d.data.metadata;
+        if (!meta) return 0;
+        const map = this.filterType === 'president' ? meta.speakers : meta.eras;
+        return (map && map[this.filterValue]) || 0;
+    }
+
+    effectiveChildren(allChildren) {
+        if (this.filterType === 'none') return allChildren;
+        return allChildren.filter(c => this.getFilteredCount(c) > 0);
     }
 
     /**
@@ -95,18 +119,22 @@ class WordTree {
      * @param {number} pageSize - Number of children per page
      */
     setPage(page, pageSize) {
+        this.currentPage = page;
+        this.currentPageSize = pageSize;
+        const available = this.effectiveChildren(this.allRootChildren);
         const start = (page - 1) * pageSize;
-        this.root.children = this.allRootChildren.slice(start, start + pageSize);
+        this.root.children = available.slice(start, start + pageSize);
         this.root.children.forEach(child => this.collapse(child));
         this.update(this.root);
     }
 
     get totalRootChildren() {
-        return this.allRootChildren ? this.allRootChildren.length : 0;
+        if (!this.allRootChildren) return 0;
+        return this.effectiveChildren(this.allRootChildren).length;
     }
 
     createSentinel(parent, showMore) {
-        const all = parent._allChildren;
+        const all = this.effectiveChildren(parent._allChildren);
         const count = parent._visibleCount;
         const name = showMore
             ? `\u25bc ${Math.min(SUBSET_SIZE, all.length - count)} more`
@@ -124,15 +152,17 @@ class WordTree {
     }
 
     renderChildren(d) {
-        const slice = d._allChildren.slice(0, d._visibleCount);
+        const available = this.effectiveChildren(d._allChildren);
+        const slice = available.slice(0, d._visibleCount);
         const sentinels = [];
-        if (d._visibleCount < d._allChildren.length) sentinels.push(this.createSentinel(d, true));
+        if (d._visibleCount < available.length) sentinels.push(this.createSentinel(d, true));
         if (d._visibleCount > SUBSET_SIZE) sentinels.push(this.createSentinel(d, false));
         d.children = [...slice, ...sentinels];
     }
 
     expandToSubset(d) {
-        d._visibleCount = Math.min(SUBSET_SIZE, d._allChildren.length);
+        const available = this.effectiveChildren(d._allChildren);
+        d._visibleCount = Math.min(SUBSET_SIZE, available.length);
         this.renderChildren(d);
         d._children = null;
     }
@@ -145,7 +175,7 @@ class WordTree {
     click(event, d) {
         if (d.data._isSentinel) {
             const parent = d.parent;
-            const total = parent._allChildren.length;
+            const total = this.effectiveChildren(parent._allChildren).length;
             if (d.data._showMore) {
                 parent._visibleCount = Math.min(parent._visibleCount + SUBSET_SIZE, total);
             } else {
@@ -204,7 +234,7 @@ class WordTree {
             .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
             .text(d => d.data._isSentinel
                 ? d.data.name
-                : d.depth === 0 ? d.data.name : `${d.data.name} (${formatNumber(d.data.value || 0)})`)
+                : d.depth === 0 ? d.data.name : `${d.data.name} (${formatNumber(self.getFilteredCount(d))})`)
             .style('fill-opacity', 1e-6);
 
         // Transition nodes to their new position
@@ -223,7 +253,10 @@ class WordTree {
             .attr('cursor', d => d.depth === 0 ? 'default' : 'pointer');
 
         nodeUpdate.select('text')
-            .style('fill-opacity', 1);
+            .style('fill-opacity', 1)
+            .text(d => d.data._isSentinel
+                ? d.data.name
+                : d.depth === 0 ? d.data.name : `${d.data.name} (${formatNumber(self.getFilteredCount(d))})`);
 
         // Remove exiting nodes
         const nodeExit = node.exit().transition()
