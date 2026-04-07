@@ -253,7 +253,10 @@ class WordTree {
             .attr('cursor', d => d.depth === 0 ? 'default' : 'pointer');
 
         nodeUpdate.select('text')
-            .style('fill-opacity', 1);
+            .style('fill-opacity', 1)
+            .text(d => d.data._isSentinel
+                ? d.data.name
+                : d.depth === 0 ? d.data.name : `${d.data.name} (${formatNumber(self.getFilteredCount(d))})`);
 
         // Remove exiting nodes
         const nodeExit = node.exit().transition()
