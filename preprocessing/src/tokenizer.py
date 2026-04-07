@@ -2,6 +2,7 @@
 Speech loading and tokenization functionality.
 """
 
+import html
 import json
 import os
 import re
@@ -73,6 +74,32 @@ def clean_text(text: str) -> str:
     """
     # Remove HTML tags like <br />, <p>, etc.
     text = re.sub(r'<[^>]+>', ' ', text)
+
+    # Decode HTML character entities (&#39; → ', &rsquo; → ', etc.)
+    text = html.unescape(text)
+
+    # Normalize Unicode apostrophe variants to straight apostrophe (U+0027)
+    text = text.replace('\u2019', "'")  # right curly quote '
+    text = text.replace('\u2018', "'")  # left curly quote  '
+    text = text.replace('\u0060', "'")  # backtick          `
+
+    # Normalize Unicode double quote variants to straight double quote (U+0022)
+    text = text.replace('\u201c', '"')  # left double curly  "
+    text = text.replace('\u201d', '"')  # right double curly "
+
+    # Replace dash variants with a space so they split adjacent words
+    text = text.replace('--', ' ')      # double hyphen (ASCII em-dash substitute); first to handle ---
+    text = text.replace('\u2014', ' ')  # em dash  —
+    text = text.replace('\u2013', ' ')  # en dash  –
+
+    # Split punctuation used as word separators with no surrounding spaces.
+    # Ellipsis handled first so its dots are consumed before the abbreviation-safe regex runs.
+    text = text.replace('\u2026', ' ')  # unicode ellipsis …
+    text = text.replace('...', ' ')     # ASCII ellipsis
+
+    # Insert a space wherever ,;:!? directly connect two letters.
+    # Excludes . so abbreviations like U.S. and H.R. are preserved.
+    text = re.sub(r'(?<=[a-zA-Z])[,;:!?]+(?=[a-zA-Z])', ' ', text)
 
     # Remove \r\n escape sequences
     text = text.replace('\\r\\n', ' ')
